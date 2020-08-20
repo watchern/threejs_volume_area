@@ -1,0 +1,53 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+ij_smart_tabs = false
+insert_final_newline = true
+max_line_length = 120
+indent_size = 2
+tab_width = 2
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.yml]
+indent_size = 2
+
+[*.ts]
+indent_size = 2
+tab_width = 2
+ij_continuation_indent_size = 2
+max_line_length = 140
+ij_typescript_enforce_trailing_comma = remove
+ij_typescript_file_name_style = lisp_case
+ij_typescript_force_quote_style = true
+ij_typescript_import_sort_module_name = true
+ij_typescript_line_comment_at_first_column = false
+ij_typescript_spaces_within_imports = true
+ij_typescript_spaces_within_object_literal_braces = true
+ij_typescript_use_chained_calls_group_indents = true
+ij_typescript_use_double_quotes = false
+ij_typescript_use_semicolon_after_statement = true
+
+[*.php]
+ij_continuation_indent_size = 2
+ij_php_variable_naming_style = camel_case
+ij_php_force_short_declaration_array_style = true
+ij_php_line_comment_add_space = true
+ij_php_line_comment_at_first_column = false
+
+[*.html]
+indent_size = 2
+ij_html_line_comment_at_first_column = false
+ij_html_block_comment_at_first_column = false
+
+[{*.cjs,*.js}]
+indent_size = 2
+ij_javascript_line_comment_at_first_column = false
+
+[*.json]
+indent_size = 2
+
