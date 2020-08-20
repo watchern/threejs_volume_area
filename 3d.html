@@ -7,20 +7,22 @@
   <script src="./js/STLLoader.js"></script>
   <script src="./js/TrackballControls.js"></script>
   <script src="./js/AsciiEffect.js"></script>
-  <style>body {
-    overflow: hidden;
-    background: #eee
-  }</style>
+  <style>
+    body {
+      overflow: hidden;
+      background: #eee
+    }
+  </style>
 </head>
 <script>
   var WIDTH, HEIGHT;
   var renderer;
 
   function initThree() {
-    WIDTH = document.documentElement.clientWidth / 2;
+    WIDTH = document.documentElement.clientWidth * 0.85 ;
     <!--{foreach from=$recommended_goods item=rgoods}-->
     <!-- {/foreach} -->
-    HEIGHT = document.documentElement.clientHeight / 2;
+    HEIGHT = document.documentElement.clientHeight * 0.85 ;
     /* 渲染器 */
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(WIDTH, HEIGHT);
@@ -82,6 +84,28 @@
       loading.parentNode.removeChild(loading);
       var geometry = event.content;
 
+
+      var Area = 0.0;
+      var volumes = 0.0;
+
+      for (var i = 0; i < geometry.faces.length; i++) {
+        var Pi = geometry.faces[i].a;
+        var Qi = geometry.faces[i].b;
+        var Ri = geometry.faces[i].c;
+
+        var P = new THREE.Vector3(geometry.vertices[Pi].x, geometry.vertices[Pi].y, geometry.vertices[Pi].z);
+        var Q = new THREE.Vector3(geometry.vertices[Qi].x, geometry.vertices[Qi].y, geometry.vertices[Qi].z);
+        var R = new THREE.Vector3(geometry.vertices[Ri].x, geometry.vertices[Ri].y, geometry.vertices[Ri].z);
+        // volumes += volumeOfT(P, Q, R);  会产生负数..............
+        volumes += volumeOfTriangle(R, Q, P);
+        Area += areaOfTriangle(R, Q, P);
+      }
+      var SurfaceArea = (Area / 100).toFixed(2);
+      console.log('表面积:' + SurfaceArea);
+      var loadedObjectVolume = (volumes / 1000).toFixed(2);
+      console.log('体积:' + loadedObjectVolume);
+
+
       // 砖红色
       var material = new THREE.MeshPhongMaterial({
         ambient: 0xff5533,
@@ -104,7 +128,6 @@
       var mesh = new THREE.Mesh(geometry, material);
       var center = THREE.GeometryUtils.center(geometry);
       var boundbox = geometry.boundingBox;
-      var vector3 = boundbox.size(null);
       var vector3 = boundbox.size(null);
       var scale = vector3.length();
       camera.position.set(scale, 0, 0);
@@ -179,6 +202,32 @@
     controls = new THREE.TrackballControls(camera, renderer.domElement);
   }
 
+  //三角形面积计算
+  function areaOfTriangle(p1, p2, p3) {
+    var v1 = new THREE.Vector3();
+    var v2 = new THREE.Vector3();
+    // 通过两个顶点坐标计算其中两条边构成的向量
+    v1 = p1.clone().sub(p2);
+    v2 = p1.clone().sub(p3);
+
+    var v3 = new THREE.Vector3();
+    // 三角形面积计算
+    v3.crossVectors(v1, v2);
+    var s = v3.length() / 2;
+    s = Math.abs(s);
+    // 如果模型出现在网格下面那么就会出现负值 但是数字的值是没有问题的 所以我们可以去将组合重新排序从而使负值转正 当然也可以使用绝对值的方法使数值转正
+    return s;
+  }
+
+  // 四面体体积计算公式
+  function volumeOfTriangle(p1, p2, p3) {
+    //借助threejs的Vector3的叉乘、点乘方法进行计算
+    var s = p1.clone().cross(p2).dot(p3) / 6; //p1叉乘p2点乘p3除以6
+    // 如果模型出现在网格下面那么就会出现负值,但是数字的值是没有问题的,所以我们可以去将组合重新排序从而使负值转正,
+    // 当然也可以使用绝对值的方法使数值转正
+    s = Math.abs(s);
+    return s;
+  }
 
   function animate() {
     requestAnimationFrame(animate);
@@ -198,5 +247,6 @@
 </script>
 <body onload="threeStart()">
 <div id="Loading" style="color:#fff">Loading...</div>
+
 </body>
 </html>
